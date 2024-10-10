@@ -1,5 +1,5 @@
 #!/bin/sh
-# Author: Your name you.login@imperial.ac.uk
+# Author: Zhang Tianye
 # Script: tabtocsv.sh
 # Description: substitute the tabs in the files with commas
 # Saves the output into a .csv file
