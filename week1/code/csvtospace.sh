@@ -7,7 +7,7 @@ if [ $# -ne 1 ]; then
 fi
 
 input_file="$1"
-output_dir="/Users/tianyezhang/Desktop/CMEECourseWork/week1/results"
+output_dir="/CMEECourseWork/week1/results"
 
 # Check if the input file exists
 if [ ! -f "$input_file" ]; then
