@@ -7,10 +7,10 @@ if [ $# -ne 1 ]; then
 fi
 
 input_file="$1"
-output_dir="/CMEECourseWork/week1/results"
+output_dir="../results"
 
 # Check if the input file exists
-if [ ! -f "$input_file" ]; then
+if [ ! -f "$input_file" ];then
     echo "False, the inputfile $input_file does not exist."
     exit 1
 fi
@@ -36,6 +36,13 @@ else
 fi
 
 exit 0
+
+
+
+
+
+
+
 
 
 
