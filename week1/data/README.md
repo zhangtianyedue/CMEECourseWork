@@ -1,0 +1,2 @@
+
+When you are located in the data folder, my programs already use relative paths for the code section, so the scripts can be run directly from the data folder. The files 407228326.fasta, 407228412.fasta, and E.coli.fasta are part of the data used by the UnixPrac1.txt file in the code folder. The remaining files with .csv extensions are associated with the csvtospace.sh script in the code folder.
