@@ -1,10 +1,10 @@
 #1.Count the number of lines in each FASTA file.
-find /Users/tianyezhang/Desktop/CMEECourseWork/week1/data -name "*.fasta" -exec wc -l {} \;> week1/results/fasta1.txt
+find . -name "*.fasta" -exec wc -l {} \; >> ../results/fasta1result.txt
 #2.Print everything starting from the second line for the E. coli genome
-sed '1d' /Users/tianyezhang/Desktop/CMEECourseWork/week1/data/fasta/E.coli.fasta > week1/results/fasta2.txt
+sed '1d' ./E.coli.fasta > ../results/fastaresult2.txt
 #3.Count the sequence length of this genome
-grep -v ">" /Users/tianyezhang/Desktop/CMEECourseWork/week1/data/fasta/E.coli.fasta | tr -d '\n' | wc -c> week1/results/fasta3.txt
+grep -v ">" ./E.coli.fasta | tr -d '\n' | wc -c >> ../results/fasta3.txt
 #4Count the matches of a particular sequence, “ATGC” in the genome of E. coli (hint: Start by removing the first line and removing newline characters)
-grep -v ">" /Users/tianyezhang/Desktop/CMEECourseWork/week1/data/fasta/E.coli.fasta | tr -d '\n' | grep -o "ATGC" | wc -l>week1/results/fasta4.txt
+grep -v ">" ./E.coli.fasta | tr -d '\n' | grep -o "ATGC" | wc -l >> ../results/fasta4.txt
 #5Compute the AT/GC ratio.
-echo "scale=2; $(grep -v ">" /Users/tianyezhang/Desktop/CMEECourseWork/week1/data/fasta/E.coli.fasta | tr -d '\n' | grep -o "[AT]" | wc -l ) / $( grep -v ">" ./data/fasta/
+echo "scale=2; ($(grep -v ">" ./E.coli.fasta | tr -d '\n' | grep -o "[AT]" | wc -l) / $(grep -v ">" ./E.coli.fasta | tr -d '\n' | grep -o "[GC]" | wc -l))" | bc > ../results/fastaresult5.txt
