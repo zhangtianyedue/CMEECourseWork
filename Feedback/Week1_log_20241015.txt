@@ -1,0 +1,581 @@
+Starting code feedback for Tianye, Week1
+
+Current Points = 100
+
+Note that: 
+(1) Major sections begin with a double "====" line 
+(2) Subsections begin with a single "====" line 
+(3) Code output or text file content are printed within single "*****" lines 
+
+======================================================================
+======================================================================
+Your Git repo size this week is about 1.46 MiB on disk 
+
+PART 1: Checking project workflow...
+
+Found the following directories in parent directory: Feedback, .git, week1, Week2
+
+Found the following files in parent directory: README.md, .DS_Store
+
+Checking for key files in parent directory...
+
+.gitignore missing, 1 pt deducted
+
+Current Points = 99
+
+Found README in parent directory, named: README.md
+
+Printing contents of README.md:
+
+**********************************************************************
+My CMEE Coursework Repository
+
+**********************************************************************
+
+======================================================================
+Looking for the weekly directories...
+
+Found 2 weekly directories: Week2, week1
+
+The Week1 directory will be assessed 
+
+======================================================================
+======================================================================
+PART 2: Checking weekly code and workflow...
+
+======================================================================
+Assessing WEEK1...
+
+Found the following directories: sandbox, data, code, results
+
+Found the following files: .DS_Store, README.md
+
+Checking for readme file in weekly directory...
+
+Found README in parent directory, named: README.md
+
+Printing contents of README.md:
+
+**********************************************************************
+1.All code files are stored in the code folder.
+2.All data files are stored in the data folder.
+3.Some of the results from running the shell scripts will be stored in the results folder.
+4.When running all the code files, please navigate to the data folder, as all my scripts use relative paths to the code folder.
+
+**********************************************************************
+
+Results directory is empty - good! 
+
+Found 8 code files: UnixPrac1.txt, boilerplate.sh, CountLines.sh, csvtospace.sh, tabtocsv.sh, variables.sh, ConcatenateTwoFiles.sh, tiff2png.sh
+
+Found the following extra files: README.md
+0.5 pt deducted per extra file
+
+Current Points = 98.5
+
+======================================================================
+Testing script/code files...
+
+======================================================================
+Inspecting script file UnixPrac1.txt...
+
+File contents are:
+
+**********************************************************************
+#1.Count the number of lines in each FASTA file.
+find . -name "*.fasta" -exec wc -l {} \; >> ../results/fasta1result.txt
+#2.Print everything starting from the second line for the E. coli genome
+sed '1d' ./E.coli.fasta > ../results/fastaresult2.txt
+#3.Count the sequence length of this genome
+grep -v ">" ./E.coli.fasta | tr -d '\n' | wc -c >> ../results/fasta3.txt
+#4Count the matches of a particular sequence, “ATGC” in the genome of E. coli (hint: Start by removing the first line and removing newline characters)
+grep -v ">" ./E.coli.fasta | tr -d '\n' | grep -o "ATGC" | wc -l >> ../results/fasta4.txt
+#5Compute the AT/GC ratio.
+echo "scale=2; ($(grep -v ">" ./E.coli.fasta | tr -d '\n' | grep -o "[AT]" | wc -l) / $(grep -v ">" ./E.coli.fasta | tr -d '\n' | grep -o "[GC]" | wc -l))" | bc > ../results/fastaresult5.txt
+
+**********************************************************************
+
+Testing UnixPrac1.txt...
+
+======================================================================
+Inspecting script file boilerplate.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/sh
+# Author: Zhang
+# Script: boilerplate.sh
+# Desc: simple boilerplate for shell scripts
+# Arguments: none
+# Date: Oct 2024
+
+echo -e "\nThis is a shell script! \n"
+
+#exit
+**********************************************************************
+
+Testing boilerplate.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+
+This is a shell script! 
+
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00386s
+
+======================================================================
+Inspecting script file CountLines.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+# Author: zhangtianye
+# Script: countlines.sh
+# Description: Counts the number of lines in one or more files and prints the result.
+# Arguments: 1 or more file names
+# Date: Oct 2024
+
+# Check if at least one argument (file name) is provided
+if [ $# -lt 1 ]; then
+    echo "Error: Please provide at least one file name."
+    echo "Usage: ./countlines.sh <file1> [file2 ...]"
+    exit 1
+fi
+
+# Loop through all provided files
+for file in "$@"; do
+    # Check if the file exists
+    if [ ! -f "$file" ]; then
+        echo "Error: The file '$file' does not exist."
+        continue  # Skip to the next file
+    fi
+
+    # Count the number of lines in the file
+    NumLines=$(wc -l < "$file")
+
+    # Output the result
+    echo "The file '$file' has $NumLines lines."
+
+done
+
+# Exit the script
+exit 0
+
+**********************************************************************
+
+Testing CountLines.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+Error: Please provide at least one file name.
+Usage: ./countlines.sh <file1> [file2 ...]
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00354s
+
+======================================================================
+Inspecting script file csvtospace.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+
+# Ensure one argument is provided (the input file)
+if [ $# -ne 1 ]; then
+    echo "False, Please input the inputfilename"
+    exit 1
+fi
+
+input_file="$1"
+output_dir="../results"
+
+# Check if the input file exists
+if [ ! -f "$input_file" ];then
+    echo "False, the inputfile $input_file does not exist."
+    exit 1
+fi
+
+# Extract the base name of the input file (without the extension)
+base_name=$(basename "$input_file" .csv)
+
+# Automatically set the output file name in the results directory
+output_file="$output_dir/${base_name}result.csv"
+
+# Ensure the results directory exists; create it if it doesn't
+mkdir -p "$output_dir"
+
+# Check if the file is already space-separated (no commas)
+if ! grep -q ',' "$input_file"; then
+    echo "The file is already space-separated. Copying the file to the output."
+    cp "$input_file" "$output_file"
+    echo "File copied successfully: $output_file"
+else
+    # Replace commas with spaces and save to output file
+    tr ',' ' ' < "$input_file" > "$output_file"
+    echo "Transformation successful and saved as: $output_file"
+fi
+
+exit 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**********************************************************************
+
+Testing csvtospace.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+False, Please input the inputfilename
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00452s
+
+======================================================================
+Inspecting script file tabtocsv.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/sh
+# Author: Zhang Tianye
+# Script: tabtocsv.sh
+# Description: substitute the tabs in the files with commas
+# Saves the output into a .csv file
+# Arguments: 1 -> tab delimited file
+# Date: Oct 2024
+
+# Check if an argument (file) is provided
+if [ $# -eq 0 ]; then
+    # If no file is provided, print an error message and exit
+    echo "Error: No file provided."
+    echo "Usage: ./tabtocsv.sh <file>"
+    exit 1  # Exit with a non-zero status to indicate an error
+fi
+
+# Check if the input file has a .csv extension
+if [ "${1##*.}" != "csv" ]; then
+    # If the file does not end with .csv, print an error and exit
+    echo "Error: The file is not a .csv file."
+    exit 1  # Exit with a non-zero status to indicate an error
+fi
+
+# If checks are passed, execute the original logic
+echo "Creating a comma delimited version of $1 ..."
+# Use 'cat' to read the file, 'tr' to replace tabs with commas, and append the result to a new file
+cat $1 | tr -s "\t" "," >> "${1%.csv}_converted.csv"
+echo "Done!"
+exit 0  # Exit successfully
+
+
+**********************************************************************
+
+Testing tabtocsv.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+Error: No file provided.
+Usage: ./tabtocsv.sh <file>
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00462s
+
+======================================================================
+Inspecting script file variables.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/sh
+
+# This script demonstrates the use of special variables, assigned variables, reading input, and handling conditions.
+
+# Check if there are any parameters passed to the script
+if [ $# -eq 0 ]; then
+    echo "No parameters were passed to the script."
+else
+    # Display the number of parameters passed to the script
+    echo "This script was called with $# parameters."
+fi
+
+# Display the name of the script
+echo "The script's name is $0"
+
+# If there are any arguments, display them
+if [ $# -gt 0 ]; then
+    echo "The arguments are: $@"
+fi
+
+# Check if at least two arguments were passed
+if [ $# -ge 2 ]; then
+    # Display the first and second arguments
+    echo "The first argument is $1"
+    echo "The second argument is $2"
+else
+    echo "Not enough arguments were passed to display the first and second arguments."
+fi
+
+# Assigned Variables: Explicit declaration of a string variable
+MY_VAR='some string'
+echo 'The current value of the variable is:' $MY_VAR
+echo
+
+# Prompt the user to input a new value for the variable
+echo 'Please enter a new string:'
+read MY_VAR
+
+# Display the new value entered by the user
+echo
+echo 'The new value of the variable is:' $MY_VAR
+echo
+
+# Handling multiple values from user input
+echo 'Please enter two numbers separated by space(s):'
+read a b
+
+# Check if both inputs are provided
+if [ -z "$a" ] || [ -z "$b" ]; then
+    echo "You did not provide two numbers."
+else
+    # Check if the inputs are valid numbers
+    if ! [[ "$a" =~ ^[0-9]+$ ]] || ! [[ "$b" =~ ^[0-9]+$ ]]; then
+        echo "Error: Both inputs must be numbers."
+    else
+        # Display the two numbers entered by the user
+        echo 'You entered' $a 'and' $b '.'
+
+        # Perform arithmetic using command substitution
+        MY_SUM=$(expr $a + $b)
+        echo "Their sum is: $MY_SUM"
+    fi
+fi
+
+exit 0
+
+**********************************************************************
+
+Testing variables.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+No parameters were passed to the script.
+The script's name is variables.sh
+Not enough arguments were passed to display the first and second arguments.
+The current value of the variable is: some string
+
+Please enter a new string:
+
+The new value of the variable is:
+
+Please enter two numbers separated by space(s):
+You did not provide two numbers.
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00457s
+
+======================================================================
+Inspecting script file ConcatenateTwoFiles.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+
+# Original functionality: merging two files into a third one
+
+# Check if three arguments are provided
+if [ $# -ne 3 ]; then
+    echo "Usage: $0 file1 file2 output_file"
+    exit 1
+fi
+
+# Check if the first input file exists
+if [ ! -f "$1" ]; then
+    echo "Error: File $1 does not exist."
+    exit 1
+fi
+
+# Check if the second input file exists
+if [ ! -f "$2" ]; then
+    echo "Error: File $2 does not exist."
+    exit 1
+fi
+
+# Check if the output file exists
+if [ -f "$3" ]; then
+    # If output file exists, ask user if they want to overwrite it
+    echo "Warning: Output file $3 already exists. Do you want to overwrite it? (y/n)"
+    read answer
+    if [ "$answer" != "y" ]; then
+        echo "Exiting without overwriting the file."
+        exit 0
+    fi
+else
+    # If the output file does not exist, create it
+    touch "$3"
+    echo "Output file $3 does not exist. Creating it..."
+fi
+
+# Merge the first input file into the output file (overwrite)
+cat "$1" > "$3"
+
+# Append the second input file to the output file
+cat "$2" >> "$3"
+
+# Display the result
+echo "Merged File is:"
+cat "$3"
+
+exit 0
+
+
+
+**********************************************************************
+
+Testing ConcatenateTwoFiles.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+Usage: ConcatenateTwoFiles.sh file1 file2 output_file
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00436s
+
+======================================================================
+Inspecting script file tiff2png.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+# Author: zhangtianye
+# Script: convert_images.sh
+# Description: Converts all files with a specific extension (e.g., .tif) to another format (e.g., .png).
+# Arguments: 1 -> Input file extension (e.g., tif)
+#            2 -> Output file extension (e.g., png)
+# Date: Oct 2024
+
+#!/bin/bash
+
+# Check if both input and output directories are provided
+if [ $# -eq 2 ]; then
+    input_dir=$1
+    output_dir=$2
+
+    # Check if input directory exists
+    if [ ! -d "$input_dir" ]; then
+        echo "Error: Input directory $input_dir does not exist."
+        exit 1
+    fi
+
+    # Check if output directory exists, if not, create it
+    if [ ! -d "$output_dir" ]; then
+        echo "Output directory $output_dir does not exist. Creating it..."
+        mkdir -p "$output_dir"
+    fi
+
+    # Loop through all .tif files in the input directory and convert them
+    for f in "$input_dir"/*.tif; do
+        if [ -f "$f" ]; then
+            echo "Converting $f"
+            output_file="$output_dir/$(basename "$f" .tif).png"
+            convert "$f" "$output_file"
+        else
+            echo "No .tif files found in $input_dir."
+        fi
+    done
+
+# If no input or output directories are provided, execute the original code
+else
+    echo "No input or output directories specified. Running in the current directory..."
+
+    # Original code to convert .tif files in the current directory
+    for f in *.tif; do
+        echo "Converting $f"
+        convert "$f" "$(basename "$f" .tif).png"
+    done
+fi
+
+**********************************************************************
+
+Testing tiff2png.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+No input or output directories specified. Running in the current directory...
+Converting *.tif
+
+**********************************************************************
+
+Encountered error (or warning):
+
+***IGNORE IF THIS ERROR IS EXPECTED AS PART OF AN IN-CLASS EXERCISE***
+
+convert-im6.q16: unable to open image `*.tif': No such file or directory @ error/blob.c/OpenBlob/2964.
+convert-im6.q16: no images defined `*.png' @ error/convert.c/ConvertImageCommand/3234.
+
+======================================================================
+======================================================================
+Finished running scripts
+
+Ran into 1 errors
+
+======================================================================
+======================================================================
+
+FINISHED WEEKLY ASSESSMENT
+
+Current Points for the Week = 98.5
+
+NOTE THAT THESE ARE POINTS, NOT MARKS FOR THE WEEK!
