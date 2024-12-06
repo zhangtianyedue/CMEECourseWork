@@ -1,66 +1,66 @@
-# Average UK Rainfall (mm) for 1910 by month
-# http://www.metoffice.gov.uk/climate/uk/datasets
-rainfall = (('JAN',111.4),
-            ('FEB',126.1),
-            ('MAR', 49.9),
-            ('APR', 95.3),
-            ('MAY', 71.8),
-            ('JUN', 70.2),
-            ('JUL', 97.1),
-            ('AUG',140.2),
-            ('SEP', 27.0),
-            ('OCT', 89.4),
-            ('NOV',128.4),
-            ('DEC',142.2),
-           )
+#!/usr/bin/env python3
 
-# (1) Use a list comprehension to create a list of month,rainfall tuples where
-# the amount of rain was greater than 100 mm.
-list_great100 = [i for i in rainfall if i[1] > 100]
-print(list_great100)
+"""
+lc2.py
+This script demonstrates the use of list comprehensions and conventional loops
+to filter UK rainfall data by specific conditions (e.g., rainfall > 100mm or < 50mm).
 
-# (2) Use a list comprehension to create a list of just month names where the
-# amount of rain was less than 50 mm. 
-list_less50 = [i[0] for i in rainfall if i[1] < 50]
-print(list_less50)
-# (3) Now do (1) and (2) using conventional loops (you can choose to do 
-# this before 1 and 2 !). 
-#For Version 
-list_great100=[]
-for i in rainfall:
-    if i[1] > 100:
-        list_great100.append(i)
-print(list_great100)
+Dataset:
+- rainfall: A tuple of tuples containing monthly rainfall data (month, rainfall in mm).
 
-#While Version 
-list_great100=[]
-i=0
-while i <len(rainfall):
-    if rainfall[i][1]>100:
-        list_great100.append(rainfall[i])
-    i+=1
-print(list_great100)
+Output:
+- Lists of months and rainfall values meeting specified conditions.
+"""
 
-#For Version
-list_less50=[]
-for i in rainfall:
-    if i[1] < 50:
-        list_less50.append(i[0])
-print(list_less50)
+rainfall = (
+    ('JAN', 111.4), ('FEB', 126.1), ('MAR', 49.9), ('APR', 95.3),
+    ('MAY', 71.8), ('JUN', 70.2), ('JUL', 97.1), ('AUG', 140.2),
+    ('SEP', 27.0), ('OCT', 89.4), ('NOV', 128.4), ('DEC', 142.2),
+)
 
-#while Version 
-list_less50=[]
-i=0
-while i <len(rainfall):
-    if rainfall[i][1]<50:
-        list_less50.append(rainfall[i][0])
-    i+=1
-print(list_less50)
+def filter_rainfall(data, condition):
+    """
+    Filters rainfall data based on a condition.
 
-# A good example output is:
-#
-# Step #1:
-# Months and rainfall values when the amount of rain was greater than 100mm:
-# [('JAN', 111.4), ('FEB', 126.1), ('AUG', 140.2), ('NOV', 128.4), ('DEC', 142.2)]
-# ... etc.
+    Parameters:
+        data (tuple): A tuple of tuples containing rainfall data (month, rainfall).
+        condition (function): A function defining the filter condition.
 
+    Returns:
+        list: A list of tuples or month names meeting the condition.
+    """
+    return [item for item in data if condition(item)]
+
+def filter_rainfall_loops(data, condition):
+    """
+    Filters rainfall data using a for loop based on a condition.
+
+    Parameters:
+        data (tuple): A tuple of tuples containing rainfall data (month, rainfall).
+        condition (function): A function defining the filter condition.
+
+    Returns:
+        list: A list of tuples or month names meeting the condition.
+    """
+    result = []
+    for item in data:
+        if condition(item):
+            result.append(item)
+    return result
+
+def main():
+    """Main execution block."""
+    # List comprehension examples
+    print("Step #1: Using List Comprehensions")
+    print("Months and rainfall > 100mm:", filter_rainfall(rainfall, lambda x: x[1] > 100))
+    print("Months with rainfall < 50mm:", [month[0] for month in filter_rainfall(rainfall, lambda x: x[1] < 50)])
+    print("-" * 40)
+
+    # Conventional loops
+    print("Step #2: Using For Loops")
+    print("Months and rainfall > 100mm:", filter_rainfall_loops(rainfall, lambda x: x[1] > 100))
+    print("Months with rainfall < 50mm:", [month[0] for month in filter_rainfall_loops(rainfall, lambda x: x[1] < 50)])
+    print("-" * 40)
+
+if __name__ == "__main__":
+    main()

@@ -1,43 +1,59 @@
-taxa = [ ('Myotis lucifugus','Chiroptera'),
-         ('Gerbillus henleyi','Rodentia',),
-         ('Peromyscus crinitus', 'Rodentia'),
-         ('Mus domesticus', 'Rodentia'),
-         ('Cleithrionomys rutilus', 'Rodentia'),
-         ('Microgale dobsoni', 'Afrosoricida'),
-         ('Microgale talazaci', 'Afrosoricida'),
-         ('Lyacon pictus', 'Carnivora'),
-         ('Arctocephalus gazella', 'Carnivora'),
-         ('Canis lupus', 'Carnivora'),
-        ]
+from collections import defaultdict
 
-# Write a python script to populate a dictionary called taxa_dic derived from
-# taxa so that it maps order names to sets of taxa and prints it to screen.
-taxa_dict = {}
-for species, category in taxa:#check if the catagory already exist 
-    if taxa_dict.get(category) is None: 
-        taxa_dict[category] = set() # set a new set to reviece new category 
-        taxa_dict[category].add(species) 
-print(taxa_dict)
-# An example output is:
-#  
-# 'Chiroptera' : set(['Myotis lucifugus']) ... etc. 
-# OR, 
-# 'Chiroptera': {'Myotis  lucifugus'} ... etc
+# Using defaultdict to optimize dictionary creation
+def populate_taxa_dict(taxa):
+    """
+    Populates a dictionary mapping order names to sets of taxa.
 
-#### Your solution here #### 
+    Parameters:
+        taxa (list of tuples): A list where each tuple contains a species and its category.
 
-# Now write a list comprehension that does the same (including the printing after the dictionary has been created)  
- 
-#### Your solution here #### 
-taxa_dict = {category: {species for species, cat in taxa if cat == category} for _, category in taxa}
-#Outer dictionary comprehension:
-#{category: ... for _, category in taxa}: This is a dictionary comprehension 
-# that iterates through all the category values in taxa and creates a key-value pair for each category.
+    Returns:
+        dict: A dictionary where keys are categories and values are sets of species.
+    """
+    taxa_dict = defaultdict(set)
+    for species, category in taxa:
+        taxa_dict[category].add(species)  # Automatically initializes the set if the key doesn't exist
+    
+    return taxa_dict
 
-#Inner set comprehension:
-#{species for species, cat in taxa if cat == category}: 
-# This is a set comprehension that iterates through all the entries (species and cat) in taxa and checks if cat is equal to the outer category. 
-# If they match, the species is added to the set corresponding to that category
+# List comprehension version
+def populate_taxa_dict_comprehension(taxa):
+    """
+    Populates a dictionary mapping order names to sets of taxa using list comprehension.
+
+    Parameters:
+        taxa (list of tuples): A list where each tuple contains a species and its category.
+
+    Returns:
+        dict: A dictionary where keys are categories and values are sets of species.
+    """
+    return {category: {species for species, cat in taxa if cat == category} for _, category in taxa}
+
+# Main execution
+if __name__ == "__main__":
+    taxa = [
+        ('Myotis lucifugus', 'Chiroptera'),
+        ('Gerbillus henleyi', 'Rodentia'),
+        ('Peromyscus crinitus', 'Rodentia'),
+        ('Mus domesticus', 'Rodentia'),
+        ('Cleithrionomys rutilus', 'Rodentia'),
+        ('Microgale dobsoni', 'Afrosoricida'),
+        ('Microgale talazaci', 'Afrosoricida'),
+        ('Lyacon pictus', 'Carnivora'),
+        ('Arctocephalus gazella', 'Carnivora'),
+        ('Canis lupus', 'Carnivora'),
+    ]
+
+    # Using defaultdict
+    taxa_dict_defaultdict = populate_taxa_dict(taxa)
+    print("Using defaultdict:")
+    print(dict(taxa_dict_defaultdict))  # Convert to regular dict for display
+
+    # Using list comprehension
+    taxa_dict_comprehension = populate_taxa_dict_comprehension(taxa)
+    print("\nUsing list comprehension:")
+    print(taxa_dict_comprehension)
 
 
 

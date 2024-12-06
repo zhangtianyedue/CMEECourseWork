@@ -1,3 +1,5 @@
+***All the codes this week use relative paths. Therefore, please make sure to set the working directory to `week3/code` when running the scripts. Otherwise, the scripts may fail to execute due to missing files.***
+
 ### 1. `oaks_debugme.py`
 This script reads a CSV file of tree species and identifies which species belong to the Quercus genus (oak trees). It processes each row and filters out non-oak species, then writes the filtered data to an output file. 
 
@@ -14,3 +16,13 @@ This script aligns two DNA sequences and finds the best possible alignment based
 
 The script uses the `calculate_score` function to align the sequences and compute the number of matches at various positions.
 
+***NEW VERSION update on 03/12/2024
+The above explains the group assignment. In addition, Week 3 also includes class learning materials related to R. Below are some updates.
+
+For the `browse.R` file, special attention is needed because the `browser()` function is used. When running the code, the program will pause when it reaches `browser()`. 
+In the terminal, it will display `Browse[2]>`, indicating that you are debugging the `Exponential` function. In debug mode, you can inspect the variable values within the function. For example, typing `N` will allow you to check the current state of `N`.
+
+The script, `DataWrang.R`, `DataWrangTidy.R`requires the `tidyverse` package for data manipulation and analysis. Please ensure that the `tidyverse` package is installed in your R environment before running the script. If it is not already installed, you can install it by running the following command in your R console:
+```r
+install.packages("tidyverse")
+``` Once installed, the package will be loaded automatically when the script is executed.

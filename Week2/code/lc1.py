@@ -1,70 +1,94 @@
-birds = ( ('Passerculus sandwichensis','Savannah sparrow',18.7),
-          ('Delichon urbica','House martin',19),
-          ('Junco phaeonotus','Yellow-eyed junco',19.5),
-          ('Junco hyemalis','Dark-eyed junco',19.6),
-          ('Tachycineata bicolor','Tree swallow',20.2),
-         )
+#!/usr/bin/env python3
 
-#(1) Write three separate list comprehensions that create three different
-# lists containing the latin names, common names and mean body masses for
-# each species in birds, respectively. 
-Latin_names=[i[0] for i in birds]
-print(Latin_names)
-Common_names=[i[1] for i in birds]
-print(Common_names)
-Mean_body_Mass=[i[2] for i in birds  ]
-print(Mean_body_Mass)
-# (2) Now do the same using conventional loops (you can choose to do this 
-# before 1 !). 
-#For Version 
-Latin_names=[]
-for i in birds:
-    Latin_names.append(i[0])
-print(Latin_names) 
-#while Version
-Latin_names=[]
-i=0
-while i < len(birds):
-    Latin_names.append(birds[i][0])
-    i+=1
-print(Latin_names)
-#print(len(birds))
+"""
+lc1.py
+This script demonstrates the use of list comprehensions and conventional loops
+to extract information from a dataset of bird species. It creates three separate
+lists: Latin names, common names, and mean body masses for each species.
 
-#For version 
-Common_names=[]
-for i in birds:
-    Common_names.append(i[1])
-print(Common_names)
+Dataset:
+- birds: A tuple of tuples containing species data (Latin name, common name, mean body mass).
 
-#While Version 
-Common_names=[]
-i=0
-while i < len(birds):
-    Common_names.append(birds[i][1])
-    i+=1
-print(Common_names)
+Output:
+- Prints the extracted lists for each approach.
+"""
 
-#For version 
-Mean_body_Mass=[]
-for i in birds:
-    Mean_body_Mass.append(i[2])
-print(Mean_body_Mass)
+birds = ( 
+    ('Passerculus sandwichensis', 'Savannah sparrow', 18.7),
+    ('Delichon urbica', 'House martin', 19),
+    ('Junco phaeonotus', 'Yellow-eyed junco', 19.5),
+    ('Junco hyemalis', 'Dark-eyed junco', 19.6),
+    ('Tachycineata bicolor', 'Tree swallow', 20.2),
+)
 
-#While version 
-Mean_body_Mass=[]
-i=0
-while i < len(birds):
-    Mean_body_Mass.append(birds[i][2])
-    i+=1
-print(Mean_body_Mass)
+def extract_list_comprehensions(data, index):
+    """
+    Extracts a specific field from the dataset using list comprehension.
 
+    Parameters:
+        data (tuple): Dataset containing bird species information.
+        index (int): Index of the field to extract (0 for Latin name, 1 for common name, 2 for mean body mass).
 
+    Returns:
+        list: Extracted field values.
+    """
+    return [item[index] for item in data]
 
+def extract_with_loops(data, index):
+    """
+    Extracts a specific field from the dataset using a conventional for loop.
 
+    Parameters:
+        data (tuple): Dataset containing bird species information.
+        index (int): Index of the field to extract (0 for Latin name, 1 for common name, 2 for mean body mass).
 
-# A nice example out out is:
-# Step #1:
-# Latin names:
-# ['Passerculus sandwichensis', 'Delichon urbica', 'Junco phaeonotus', 'Junco hyemalis', 'Tachycineata bicolor']
-# ... etc.
- 
+    Returns:
+        list: Extracted field values.
+    """
+    result = []
+    for item in data:
+        result.append(item[index])
+    return result
+
+def extract_with_while(data, index):
+    """
+    Extracts a specific field from the dataset using a while loop.
+
+    Parameters:
+        data (tuple): Dataset containing bird species information.
+        index (int): Index of the field to extract (0 for Latin name, 1 for common name, 2 for mean body mass).
+
+    Returns:
+        list: Extracted field values.
+    """
+    result = []
+    i = 0
+    while i < len(data):
+        result.append(data[i][index])
+        i += 1
+    return result
+
+def main():
+    """Main execution block."""
+    # Using list comprehensions
+    print("Step #1: Using List Comprehensions")
+    print("Latin Names:", extract_list_comprehensions(birds, 0))
+    print("Common Names:", extract_list_comprehensions(birds, 1))
+    print("Mean Body Masses:", extract_list_comprehensions(birds, 2))
+    print("-" * 40)
+
+    # Using for loops
+    print("Step #2: Using For Loops")
+    print("Latin Names:", extract_with_loops(birds, 0))
+    print("Common Names:", extract_with_loops(birds, 1))
+    print("Mean Body Masses:", extract_with_loops(birds, 2))
+    print("-" * 40)
+
+    # Using while loops
+    print("Step #3: Using While Loops")
+    print("Latin Names:", extract_with_while(birds, 0))
+    print("Common Names:", extract_with_while(birds, 1))
+    print("Mean Body Masses:", extract_with_while(birds, 2))
+
+if __name__ == "__main__":
+    main()

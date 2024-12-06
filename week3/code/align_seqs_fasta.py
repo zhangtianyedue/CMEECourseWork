@@ -34,6 +34,8 @@ Version: 3.9
 import sys 
 import os
 
+print("Current working directory:", os.getcwd())
+
 # Define the base directory for your data (relative path)
 base_dir = "../data/"
 
@@ -120,7 +122,7 @@ def calculate_score(s1, s2, l1, l2, startpoint):
 my_best_align = None
 my_best_score = -1
 
-with open('../Results/DNA_seq.txt', 'w') as f:
+with open('../results/DNA_seq.txt', 'w') as f:
     for i in range(l1):
         score = calculate_score(s1, s2, l1, l2, i)
         if score > my_best_score:
