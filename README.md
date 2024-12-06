@@ -13,4 +13,4 @@ When running any scripts from this repository, please ensure that your working d
 ### Special Note on Week 4
 In the `week4/code` folder, there is a LaTeX report that references the `1.png` image file located in `week4/data`. To prevent issues with image loading, I have included a pre-generated PDF of the report (`week4/code/report.pdf`) for your convenience and reference. You can view this file directly without compiling the LaTeX document.
 
-Please ensure you follow the folder structure and path conventions to smoothly run and interpret the scripts and reports within this repository. Let me know if you have any questions or issues!
+Please ensure you follow the folder structure and path conventions to smoothly run and interpret the scripts and reports within this repository. Let me know if you have any questions or issues!！！！！
