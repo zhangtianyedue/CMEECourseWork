@@ -10,9 +10,9 @@ MyDF <- read.csv("../data/EcolArchives-E089-51-D1.csv")
 
 # Convert prey mass from milligrams (mg) to grams (g) where applicable
 # This ensures consistency in the unit of measurement across the dataset
-MyDF <- MyDF %>%
-  mutate(Prey.mass = ifelse(Prey.mass.unit == "mg", Prey.mass / 1000, Prey.mass),
-         Prey.mass.unit = "g") # Update the unit to grams for all entries
+#MyDF <- MyDF %>%
+  #mutate(Prey.mass = ifelse(Prey.mass.unit == "mg", Prey.mass / 1000, Prey.mass),
+         #Prey.mass.unit = "g") # Update the unit to grams for all entries
 
 # Create a PDF file to save the resulting plot for documentation and sharing purposes
 pdf("../results/PP_Regress.pdf", width = 9, height = 12) # Set dimensions for better readability
