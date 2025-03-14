@@ -115,3 +115,39 @@ Below is the detailed file structure of the archive, organized by week and categ
 2. Review the `README.md` file in each folder for guidance on running scripts.
 3. Install required dependencies for R or Python using the provided environment files or package lists.
 
+## 🚀 Latest Additions (March 14, 2025)
+On **March 14, 2025, at 02:31 AM**, I added two major components:
+- **Mini Project**: A structured analysis pipeline for microbial growth model selection and Bayesian inference.
+- **HPC Work**: A high-performance computing (HPC) workflow for large-scale simulations and data analysis.
+
+These components integrate **R, Python, and HPC resources**, enabling **automated model selection, Bayesian inference, and large-scale simulations**.
+
+---
+
+## 📂 Project Structure
+
+### 🔬 Mini Project (`miniproject/`)
+miniproject/ │── code/ │ ├── Run Miniproject.sh │ ├── miniprojectdatacleaning.R │ ├── globlefitting5model.R │ ├── time_sigmentfitting5model.R │ ├── Fcomplexicitytest.R │ ├── GOMBayesian.R │ ├── LogisticBayesian.R │ ├── plot_timesigment.py │ ├── plotgloble.py │ ├── main.tex │ ├── references.bib │ └── supplementary.tex │ │── data/ │ ├── LogisticGrowthData.csv │ │── results/ │ ├── *.csv │ ├── *.png │ └── *.rds │ │── sandbox/ │ └── .gitkeep
+
+
+### 🖥️ HPC Work (`hpcwork/`)
+hpcwork/ │── simulation_results/ # Contains multiple .rda simulation files │── demographic_cluster/ # Stores HPC output logs (.o & .e files) │── scripts/ # R scripts for running and analyzing simulations │── plots/ # Generated result plots │── processed_data/ # Processed .rda results for further analysis
+
+
+---
+
+## 🔧 How to Use
+1. **Mini Project**
+   - Run all analysis scripts in the `code/` folder.
+   - Outputs are stored in the `results/` folder.
+
+2. **HPC Work**
+   - Includes HPC job submission scripts and result processing.
+   - Large-scale simulation results are stored in `simulation_results/` and `processed_data/`.
+
+---
+
+### ✨ Notes
+- The **Mini Project** automates model selection using **AIC, BIC, WAIC, and Bayes Factor (BF)**.
+- The **HPC Work** enables **parallelized simulations and demographic clustering analysis**.
+- All key results and figures are saved in the `results/` and `plots/` directories.

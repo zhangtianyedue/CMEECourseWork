@@ -1,0 +1,14 @@
+[1] "✅ Running simulation with iter = 62"
+[1] "Simulation completed in 41400.02 seconds and saved as simulation_output_62.rda Total generations run: 661114"
+[1] "✅ Simulation completed successfully. Output saved as simulation_output_62.rda"
+[1] "🎯 HPC job finished."
+
+============================================
+
+        Job resource usage summary 
+
+                 Memory (GB)    NCPUs
+ Requested  :         4             1
+ Used       :         0 (peak)   0.96 (ave)
+
+============================================

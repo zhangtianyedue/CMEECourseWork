@@ -1,0 +1,522 @@
+\documentclass{article}
+
+% 需要的包
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subcaption} % 处理子图
+\usepackage{siunitx}    % 科学计数法
+\usepackage{placeins}   % 确保表格不会漂移
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+
+% 统计总字数并存入 wordcount.txt
+\newcommand\wordcount{%
+  \immediate\write18{texcount -sum -1 main.tex > wordcount.txt} % 只统计总字数
+  \input{wordcount.txt} % 读取字数
+}
+
+\title{Comparing Growth Models for Microbial Data: Gompertz and Logistic Outperform Richards and Linear Models}
+
+\author{\textbf{Tianye Zhang} \\
+Imperial College London \\
+\texttt{tz124@ic.ac.uk}
+}
+
+\date{}  % 如果不需要日期，可以留空
+
+\begin{document}
+
+\maketitle
+
+% Word count 放在文档开始后，确保不影响编译
+\noindent \textbf{Word Count:} \wordcount
+
+\section{Abstract}
+
+
+Mathematical modeling is essential in microbial ecosystem studies, particularly for selecting appropriate growth curve models. This study evaluates five models—Logistic, Gompertz, Richards, Linear, and Quadratic using the corrected Akaike Information Criterion (AICc), BIC, and Residual Sum of Squares (RSS) for model selection. To improve accuracy, we introduced a segmented fitting approach, dividing data into two time periods based on the median time point.
+
+Our results show that nonlinear models, particularly Gompertz and Logistic, outperform linear models in describing microbial growth. The Richards model, despite its flexibility, exhibited weaker performance due to complexity. Additionally, Bayesian inference was applied to enhance parameter estimation, using WAIC, LOO, and Bayes Factor (BF) for model comparison. The findings highlight a trade-off between generalization and biological interpretability in growth modeling.
+
+By integrating mathematical rigor with empirical data, this study provides a systematic approach to microbial growth modeling, offering insights applicable to ecological modeling and predictive microbiology.
+
+
+
+\section{Introduction}
+
+\subsection{Research Background}
+Microbial communities are vital in ecosystems, medicine, and industry, influencing global carbon cycling, nutrient transformation, and ecosystem productivity. Bacteria contribute to carbon fixation and organic matter decomposition, maintaining ecological balance.
+
+In medicine and public health, bacterial growth rates affect disease transmission and antibiotic resistance evolution, making growth pattern prediction crucial for effective disease control.
+
+Predictive microbiology, introduced by Roberts and Jarvis, uses mathematical models to describe microbial growth. These models fall into two categories: mechanistic models, based on population dynamics and resource availability, and phenomenological models, which fit experimental data without necessarily considering biological mechanisms.
+
+\subsection{Applications of Mathematical Models in Ecology}
+
+Population growth follows the \textbf{Malthusian Principle}, but real-world constraints lead to a stable \textbf{carrying capacity} (\(K\)). Microbial populations, with their rapid growth, provide ideal models for studying these dynamics.
+
+Microbial growth typically follows four phases: \textbf{lag, exponential, stationary,} and \textbf{death}. Linear models fail to capture this \textbf{S-shaped growth}, making \textbf{nonlinear models} more suitable, including:
+\begin{itemize}
+    \item \textbf{Logistic} – A fundamental \textbf{S-shaped model}.
+    \item \textbf{Gompertz} – Better accounts for the \textbf{lag phase}.
+    \item \textbf{Richards} – A more flexible generalization.
+\end{itemize}
+
+Despite the widespread application of microbial growth models, selecting the optimal model remains challenging due to the trade-off between \textbf{model complexity} and \textbf{interpretability}. This study evaluates different model selection approaches to improve prediction accuracy and reduce overfitting risks.
+
+
+\subsection{Research Objectives}
+
+This study aims to:
+\begin{itemize}
+    \item Compare the fitting performance of five mathematical models for microbial growth.
+    \item Analyze the relationships between \textbf{Richards, Gompertz, and Logistic models} and quantify the effect of model complexity using the \textbf{F-statistic}.
+    \item Apply \textbf{Bayesian methods} to optimize parameter estimation in \textbf{Gompertz and Logistic models}, using \textbf{WAIC, LOO, and Bayes Factor} for model selection.
+\end{itemize}
+
+By integrating mathematical analysis, statistical modeling, and Bayesian inference, this study enhances model selection, parameter estimation, and robustness, providing improved tools for microbial ecology research.
+\section{Methods}
+
+\subsection{Data Processing}
+\subsubsection{Data Sources}
+This study utilizes publicly available experimental data encompassing microbial population growth under various temperature and culture medium conditions. The dataset includes key variables such as \textbf{Time}, \textbf{Population Biomass (PopBio)}, \textbf{Temperature (Temp)}, \textbf{Medium}, and \textbf{Citation}.  
+
+\subsubsection{Data Preprocessing}  
+Data preprocessing was performed in \texttt{R} using \texttt{dplyr}, \texttt{readr}, and \texttt{minpack.lm}. Key steps included:  
+\begin{itemize}  
+    \item \textbf{Removing missing values} to ensure completeness.  
+    \item \textbf{Standardizing population biomass}, filtering outliers, and applying logarithmic transformation (\(\log N = \log(\text{PopBio})\)).  
+    \item \textbf{Validating temperature} (\textit{Temp}) for experimental consistency.  
+    \item \textbf{Generating unique identifiers} (\textit{Unique\_ID}) for grouping.  
+    \item \textbf{Filtering time variable} (\textit{Time}) to retain meaningful intervals.  
+\end{itemize}  
+
+
+After preprocessing, the final dataset contained **4,036 records across 12 variables**, stored as \texttt{Cleaned\_LogisticGrowthData.csv} for subsequent model fitting. 
+
+Scatter plots and model fitting for each \texttt{Unique\_ID} were performed in \texttt{Python} using \texttt{pandas}, \texttt{numpy}, \texttt{matplotlib}, and \texttt{scipy.optimize}. The process involved loading and preprocessing data, applying linear and nonlinear model fitting (including Logistic, Gompertz, and Richards models), and generating visualizations with time-segmented analysis to compare different model performances.
+
+
+
+
+\section{Mathematical Models}
+
+\subsection{Distinguishing Between Linear and Nonlinear Models}
+
+In the study of growth models, mathematical models are generally categorized into \textbf{linear models} and \textbf{nonlinear models}. Linear models are characterized by a constant growth rate, whereas nonlinear models typically involve exponential, logarithmic, or power functions, allowing them to more flexibly describe growth processes.
+
+\textbf{Linear Model:}
+\begin{equation}
+  y = a + bt
+\end{equation}
+where \( a \) represents the initial value, and \( b \) denotes the growth rate.
+
+\textbf{Quadratic Model:}
+\begin{equation}
+  y = a + bt + ct^2
+\end{equation}
+This model allows for a time-dependent growth rate but still fails to capture the characteristic S-shaped growth curve observed in biological systems.
+
+\textbf{Nonlinear Models} (including Logistic, Gompertz, and Richards models):
+Their growth rates dynamically change over time, capturing the \textbf{lag phase, exponential growth phase, and stationary phase}.
+
+\subsection{Schnute Unified Framework}
+
+Schnute (1981) proposed a generalized growth model that encompasses linear, quadratic, Logistic, Gompertz, and Richards models. Its general form is given by:
+
+\begin{equation}
+  y(t) = \frac{b}{y_1^{1-b} + y_2^{1-b}} \left( \frac{1 - \exp(-a(t - \tau_1))}{1 - \exp(-a(\tau_2 - \tau_1))} \right)^{1/b}
+\end{equation}
+
+where:
+\begin{itemize}
+    \item \( a \) controls the growth rate;
+    \item \( b \) determines the specific form of the model;
+    \item \( y_1, y_2 \) represent the initial and final values;
+    \item \( \tau_1, \tau_2 \) correspond to time points.
+\end{itemize}
+
+Different values of \( a \) and \( b \) yield different growth models:
+
+\subsection{Derivation of Logistic and Gompertz Models from the Schnute Framework}
+
+\textbf{Logistic Model:}
+\begin{equation}
+  y(t) = \frac{A}{1 + \exp(-a(t - \lambda))}
+\end{equation}
+where:
+\begin{itemize}
+    \item \( A \) represents the maximum growth value;
+    \item \( \lambda \) represents the lag phase;
+    \item \( a \) controls the growth rate.
+\end{itemize}
+
+\textbf{Gompertz Model:}
+\begin{equation}
+  y(t) = A \exp \left( \frac{1 - \exp(-a(t - \tau_1))}{1 - \exp(-a(\tau_2 - \tau_1))} \right)
+\end{equation}
+By further assuming that \( \tau_2 \to \infty \), making \( A \) the final equilibrium value of the system, and setting \( \tau_1 = 0 \) as the initial time point, we obtain:
+
+\begin{equation}
+  y = A \exp \left(-\exp \left( \frac{\mu_m e}{A} (\lambda - t) + 1 \right) \right)
+\end{equation}
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Model} & \textbf{Condition} & \textbf{Number of Parameters} \\
+        \hline
+        Linear Model & \( a = 0, b = 1 \) & 2 \\
+        Quadratic Model & \( a = 0, b = 0.5 \) & 3 \\
+        Gompertz Model & \( a > 0, b = 0 \) & 3 \\
+        Logistic Model & \( a > 0, b = -1 \) & 3 \\
+        Richards Model & \( a > 0, b < 0 \) & 4 \\
+        \hline
+    \end{tabular}
+    \caption{Growth models derived from the Schnute framework.}
+\end{table}
+
+\subsection{Model Suitability Analysis}
+
+Different growth models exhibit different applicability depending on the biological system under study:
+\begin{itemize}
+    \item \textbf{Linear models} are suitable for \textbf{short time windows}, where they can approximate growth trends.
+    \item \textbf{Quadratic models} allow growth rates to change over time but fail to adequately describe \textbf{S-shaped growth curves}.
+    \item \textbf{Logistic models} are appropriate for \textbf{resource-limited environments}, such as \textbf{bacterial growth and population expansion}.
+    \item \textbf{Gompertz models} are ideal for \textbf{growth processes where the initial phase is slow, followed by an acceleration, and finally a stabilization}, such as \textbf{tumor growth and food spoilage}.
+    \item \textbf{Richards models}, due to their additional shape parameter \( \nu \), provide more flexibility than Logistic and Gompertz models but are prone to overfitting in small-sample datasets.
+\end{itemize}
+
+This section mathematically demonstrates that different growth models can be derived from the \textbf{Schnute unified framework} and selected based on \textbf{data characteristics}. The next section further explores the complexity and overfitting issues associated with the \textbf{Richards model}.
+
+\subsection{Parameter Initialization}
+
+Proper initialization of growth model parameters is crucial for ensuring numerical stability during model fitting. In this study, key parameters were selected based on data characteristics while considering biological significance:
+
+\begin{itemize}
+    \item \textbf{Lag phase \( t_{\text{lag}} \)}: Represents the transition phase where populations adapt to new environments before rapid growth. Its value was estimated using the median of time data to mitigate the influence of outliers.
+    \item \textbf{Initial population size \( N_0 \)}: Set as the minimum observed value in the dataset to match the initial conditions of the microbial population.
+    \item \textbf{Carrying capacity \( K \)}: Corresponds to the maximum population density in the stationary phase, set as 110\% of the observed maximum value to allow for sufficient growth capacity in the model.
+    \item \textbf{Maximum growth rate \( r_{\text{max}} \)}: Estimated using rolling regression to ensure the value accurately reflects the peak growth trend of the population.
+    \item \textbf{Shape parameter \( v \)} (applicable only to the Richards model): Randomly initialized between 0.5 and 2 to provide flexibility in curve shape adjustment.
+\end{itemize}
+
+The selection of these parameters enhances numerical convergence and ensures the biological interpretability of the model. Future research may explore further optimization of the shape parameter selection or integrate Bayesian optimization methods to improve model fitting performance.
+\subsection{Model Evaluation}
+
+\subsubsection{Statistical Model Selection Criteria}
+
+\textbf{Corrected Akaike Information Criterion (AICc):} A modification of AIC that accounts for small sample sizes, improving model selection reliability:
+\begin{equation}
+  AICc = AIC + \frac{2k(k+1)}{n-k-1}
+\end{equation}
+where \( k \) is the number of parameters and \( n \) is the sample size. AICc reduces bias in small datasets, making it the preferred criterion in this study.
+
+\textbf{Akaike Information Criterion (AIC) and Bayesian Information Criterion (BIC):} AIC evaluates model fit while penalizing complexity, whereas BIC introduces an additional penalty for larger sample sizes:
+\begin{equation}
+  AIC = 2k - 2\ln(L), \quad BIC = k\ln(n) - 2\ln(L)
+\end{equation}
+where \( L \) is the maximum likelihood and \( n \) is the number of observations. While useful, AIC and BIC may be less reliable for small datasets.
+
+\textbf{Limitations of Residual Sum of Squares (RSS):} RSS measures model error but ignores complexity, making it prone to overfitting in nonlinear least squares (NNLS) fitting. A lower RSS may favor overly complex models with poor generalizability. Therefore, relying on RSS alone can be misleading, highlighting the need for criteria like AICc to ensure robust model selection, especially for small sample sizes.
+
+
+\subsubsection{Complexity Analysis of the Richards Model}
+
+To investigate the mathematical relationship between the Richards model and the Gompertz/Logistic models, we applied the \textbf{F-statistic} to quantify the impact of model complexity.
+
+\textbf{F-statistic:} Assesses the improvement in model fit when comparing nested models, defined as:
+\begin{equation}
+  F = \frac{(RSS_1 - RSS_2) / (df_1 - df_2)}{RSS_2 / df_2}
+\end{equation}
+where \( RSS_1 \) and \( RSS_2 \) denote the residual sums of squares for the simpler and more complex models, respectively, and \( df_1 \) and \( df_2 \) are the corresponding degrees of freedom.
+\subsubsection{Bayesian Methods for Nonlinear Model Optimization}
+
+This study further employs \textbf{Bayesian methods} to optimize nonlinear models, focusing on the stability of parameter estimation in the Gompertz and Logistic models.
+
+\textbf{Posterior Distribution:} Bayesian inference allows the estimation of parameter probability distributions, thereby reducing parameter uncertainty.
+
+\textbf{Watanabe-Akaike Information Criterion (WAIC):} A Bayesian extension of AIC, defined as:
+\begin{equation}
+  WAIC = -2 \sum_{i=1}^{n} \ln E[p(y_i | \theta)] + 2 V \left( \sum_{i=1}^{n} \ln p(y_i | \theta) \right)
+\end{equation}
+where the second term adjusts for model complexity.
+
+\textbf{Leave-One-Out Cross-Validation (LOO):} Computes the predictive probability of each data point, evaluating the generalization ability of the model.
+
+\textbf{Bayes Factor (BF):} Compares the relative support for different models, given by:
+\begin{equation}
+  BF = \frac{P(D | M_1)}{P(D | M_2)}
+\end{equation}
+where \( P(D | M) \) represents the marginal likelihood of the data under model \( M \).
+
+
+\section{Results}
+\subsection{Model Selection and Temporal Segmentation Fitting}
+
+To evaluate the best-fitting models for microbial growth data, we conducted model selection using \textbf{Gompertz, Logistic, Quadratic, Linear, and Richards models}. Model selection was performed based on the \textbf{AICc criterion}, and the results are summarized in \textbf{Figure~\ref{fig:model_selection_comparison}} and \textbf{Table~\ref{tab:global_fit}}.
+
+\begin{table}[h]
+    \centering
+    \caption{Model selection results for global fitting based on AICc.}
+    \label{tab:global_fit}
+    \begin{tabular}{lcc}
+        \hline
+        \textbf{Model} & \textbf{Count} & \textbf{Percentage (\%)} \\
+        \hline
+        Gompertz  & 127  & 45.2  \\
+        Logistic  & 49   & 17.4  \\
+        Quadratic & 89   & 31.7  \\
+        Linear    & 16   & 5.69  \\
+        \hline
+    \end{tabular}
+\end{table}
+
+The \textbf{Gompertz model} was the most frequently selected model (\textbf{45.2\%}), followed by the \textbf{Quadratic model (31.7\%)} and the \textbf{Logistic model (17.4\%)}. The \textbf{Linear model} was rarely chosen (\textbf{5.69\%}), indicating that simple linear approximations were generally inadequate for describing microbial growth.
+
+Although the \textbf{Richards model} was included in the candidate models, it was \textbf{not selected in the global fitting}. This is likely due to its additional complexity and the associated penalty in \textbf{AICc}, making it less competitive against simpler models such as Gompertz and Logistic. However, given its flexibility, it was further examined in time-segmented analysis.
+
+When models were grouped into \textbf{linear} (Quadratic and Linear) and \textbf{nonlinear} (Gompertz, Logistic, and Richards) categories, \textbf{nonlinear models were preferred in 62.6\% of cases} (\textbf{Figure~\ref{fig:model_selection_comparison}}).
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Best_Model_Proportion_Percentage.png}
+        \caption{Global fitting: Gompertz as the predominant model.}
+        \label{fig:global_fitting}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Best_Model_Proportion_Percentage2.png}
+        \caption{Segmented fitting: Logistic as the predominant model.}
+        \label{fig:segmented_fitting}
+    \end{subfigure}
+    \caption{Comparison of model selection under global and segmented fitting.}
+    \label{fig:model_selection_comparison}
+\end{figure}
+
+To further examine growth patterns across different phases, we performed \textbf{time-segmented model fitting} by dividing each dataset into \textbf{early-phase} (before the median time) and \textbf{late-phase} (after the median time). The results are shown in \textbf{Table~\ref{tab:time_segmented_fit}}.
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{id_59_growth_curve.png}
+        \caption{Standard fitting.}
+        \label{fig:standard_fitting}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{id_59_growth_curve1.png}
+        \caption{Segmented fitting with time split.}
+        \label{fig:segmented_fitting}
+    \end{subfigure}
+    \caption{Comparison of two different fitting approaches for the same dataset (ID 59). The left plot (\subref{fig:standard_fitting}) represents the fitting results without time segmentation, while the right plot (\subref{fig:segmented_fitting}) incorporates a median time-based split (indicated by the dashed line). Despite using the same dataset and mathematical models, different fitting approaches yield varying results. If the segmentation is made infinitely small, the final model would approximate an exponential function, as discussed further in the Discussion section.}
+    \label{fig:fitting_comparison}
+\end{figure}
+
+\begin{table}[h]
+    \centering
+    \caption{Model selection results for time-segmented fitting based on AICc.}
+    \label{tab:time_segmented_fit}
+    \begin{tabular}{lcc}
+        \hline
+        \textbf{Model} & \textbf{Count} & \textbf{Percentage (\%)} \\
+        \hline
+        Gompertz  & 20   & 20.0  \\
+        Logistic  & 36   & 36.7  \\
+        Quadratic & 26   & 26.5  \\
+        Linear    & 11   & 11.2  \\
+        Richards  & 17   & 17.0  \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Compared to the global model fitting, \textbf{the Logistic model showed improved performance in time-segmented fitting (36.7\%)}, while \textbf{the selection frequency of the Gompertz model decreased to 20\%}. Additionally, \textbf{the Richards model, which was not selected in global fitting, performed better in segmented analysis (17\%)}, suggesting that its flexibility provides a better fit in specific growth phases.
+
+When considering \textbf{linear vs. nonlinear models}, nonlinear models remained dominant, with \textbf{63.3\% selection in time-segmented analysis}, compared to \textbf{62.6\% in global analysis}. These results indicate that \textbf{nonlinear growth models are generally preferred} for describing microbial population dynamics.
+
+\subsection{Results: Overfitting Assessment of the Richards Model}
+
+To assess potential overfitting of the Richards model, we compared its performance against the Gompertz and Logistic models in terms of Residual Sum of Squares (RSS), F-statistics, and p-values. The summary statistics are presented in the following tables.
+
+RSS reflects the goodness of fit, with \textbf{lower values generally indicating a better representation of the observed data}.
+
+The F-statistic quantifies the relative change in RSS between models, where \textbf{higher values typically suggest a greater discrepancy in model performance}. Table 4 presents the F-statistics for the comparisons between Richards and the other models.
+
+Since the results obtained from segmented time modeling show improved performance, we adopted this approach to analyze the data.
+
+\FloatBarrier
+\begin{table}[h]
+    \centering
+    \label{tab:fstat_comparison}
+    \caption{F-statistics comparing Richards model with Gompertz and Logistic models. Higher F-values indicate a greater difference in RSS.}
+    \renewcommand{\arraystretch}{1.2}
+    \setlength{\tabcolsep}{4pt}
+    \small
+    \begin{tabular}{lcccccc}
+        \hline
+        \textbf{Comparison} & \textbf{Min} & \textbf{1st Quartile} & \textbf{Median} & \textbf{Mean} & \textbf{3rd Quartile} & \textbf{Max} \\
+        \hline
+        F (Gompertz vs. Richards) & \num{0.0000} & \num{1.0000} & \num{2.0000} & \num{1.185e28} & \num{70.00} & \num{7.319e29} \\
+        F (Logistic vs. Richards) & \num{0.0000} & \num{1.0000} & \num{1.0000} & \num{1.105e28} & \num{18.00} & \num{1.684e30} \\
+        \hline
+    \end{tabular}
+\end{table}
+
+The p-value assesses the statistical significance of this difference, with \textbf{lower values (close to 0) indicating substantial differences in RSS, while higher values (close to 1) suggest that the improvement offered by the Richards model is not necessarily significant}. Table~\ref{tab:pval_comparison} summarizes the p-values for these comparisons.
+
+\FloatBarrier
+\begin{table}[h]
+    \centering
+    \caption{p-values for the comparisons between Richards and other models. Lower p-values indicate statistically significant differences.}
+    \label{tab:pval_comparison}
+    \renewcommand{\arraystretch}{1.2}
+    \setlength{\tabcolsep}{4pt}
+    \small
+    \begin{tabular}{lcccccc}
+        \hline
+        \textbf{Comparison} & \textbf{Min} & \textbf{1st Quartile} & \textbf{Median} & \textbf{Mean} & \textbf{3rd Quartile} & \textbf{Max} \\
+        \hline
+        p (Gompertz vs. Richards) & \num{0.0000} & \num{0.0000} & \num{0.1404} & \num{0.2175} & \num{0.2626} & \num{0.9932} \\
+        p (Logistic vs. Richards) & \num{0.0000} & \num{0.0004} & \num{0.2357} & \num{0.3332} & \num{0.4317} & \num{1.0000} \\
+        \hline
+    \end{tabular}
+\end{table}
+\subsection{Bayesian Inference Results}
+
+To assess the parameter distributions of the Gompertz and Logistic models, Bayesian inference was performed using Markov Chain Monte Carlo (MCMC) sampling. Model comparison was based on WAIC, LOO, and Bayes Factor (BF), as shown in the following tables.
+\FloatBarrier
+% 减少表格前的空白
+\begin{table}[h]
+    \centering
+    \caption{Model Comparison using WAIC, LOOIC, and Bayes Factor (BF).}
+    \label{tab:bayes_comparison}
+    \begin{tabular}{lccc}
+        \hline
+        \textbf{Model} & \textbf{WAIC} & \textbf{LOOIC} & \textbf{Bayes Factor (BF)} \\
+        \hline
+        Logistic & 45384.7 $\pm$ 748.4 & 45384.7 $\pm$ 748.4 & 1.00 \\
+        Gompertz & 45394.8 $\pm$ 748.6 & 45394.8 $\pm$ 748.6 & 157.42 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+\FloatBarrier
+\vspace{-0.5cm} % 减少表格前的空白
+\begin{table}[h]
+    \centering
+    \caption{Posterior Summaries of Gompertz Model Parameters}
+    \label{tab:bayesian_parameters_gompertz}
+    \renewcommand{\arraystretch}{1.2}
+    \setlength{\tabcolsep}{6pt}
+    \small
+    \begin{tabular}{lccc}
+        \hline
+        \textbf{Parameter} & \textbf{2.5\%} & \textbf{Median} & \textbf{97.5\%} \\
+        \hline
+        $r_{\max}$  & 0.4237  & 0.6852  & 1.2149 \\
+        $K$         & 13.30   & 19.18   & 27.41  \\
+        $t_{\text{lag}}$ & 0.0909  & 1.5990  & 4.6895 \\
+        $\sigma$    & 5.069   & 5.294   & 5.534  \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\FloatBarrier
+\vspace{-0.5cm} % 减少表格前的空白
+\begin{table}[h]
+    \centering
+    \caption{Posterior Summaries of Logistic Model Parameters}
+    \label{tab:bayesian_parameters_logistic}
+    \renewcommand{\arraystretch}{1.2}
+    \setlength{\tabcolsep}{6pt}
+    \small
+    \begin{tabular}{lccc}
+        \hline
+        \textbf{Parameter} & \textbf{2.5\%} & \textbf{Median} & \textbf{97.5\%} \\
+        \hline
+        $r_{\max}$  & 0.1059  & 0.1979  & 0.3346 \\
+        $K$         & 13.84   & 19.48   & 26.63  \\
+        $N_0$       & 0.3070  & 0.8838  & 2.5233 \\
+        $\sigma$    & 5.079   & 5.286   & 5.528  \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+\section{Discussion}
+
+\subsection{Model Selection and Temporal Segmentation Fitting}
+Model selection results (Table 2) indicate that \textbf{Gompertz (45.2\%) and Logistic (17.4\%) were the most frequently selected nonlinear models} in global fitting, while Quadratic models (31.7\%) also showed notable selection rates. The Linear model was rarely chosen (5.69\%), suggesting that simple linear approximations were generally inadequate for describing microbial growth. 
+
+The preference for nonlinear models aligns with biological expectations, as microbial growth typically follows a sigmoidal pattern due to resource limitations. 
+
+When considering temporal segmentation (Table 3), the \textbf{Logistic model improved its selection rate to 36.7\%}, while the Gompertz model's selection frequency dropped to 20\%. The Richards model, which was not preferred in global fitting due to its complexity, performed better in segmented fitting (17\%), indicating that its flexibility provides advantages when specific growth phases are considered. 
+
+Moreover, comparing nonlinear and linear models, nonlinear models were generally favored, with \textbf{62.6\% selection in global fitting and 63.3\% in time-segmented analysis}. This highlights the superior capability of nonlinear models in capturing microbial growth dynamics, as they explicitly account for different growth phases, including the lag, exponential, and stationary phases. However, due to the limited data size, the differences in model performance are not always significant. The lack of larger datasets means that not all models can be successfully fitted, and in some cases, if the initial values are not properly set, linear models may even outperform nonlinear models. This suggests that model selection is highly dependent on the structure of the data.
+\subsection{Complexity Penalty and the Limited Use of the Richards Model}
+
+The Richards model was rarely selected in global fitting due to AICc’s complexity penalty. Although it had a lower RSS mean (0.0201) than Logistic (0.2428), the F-statistic revealed extreme differences (mean $>10^{28}$). However, high p-values (max = 0.9932) suggest that this difference is statistically insignificant. Despite its flexibility, the Richards model was penalized for its additional parameter, reducing its selection frequency. Instead, Gompertz and Logistic models provided a better balance between fit and complexity, making them more favorable for microbial growth modeling.
+
+
+\subsection{Bayesian Inference: Model Comparison and Parameter Uncertainty}
+Bayesian inference was performed using Markov Chain Monte Carlo (MCMC) sampling, allowing a more comprehensive evaluation of parameter distributions. Model comparisons were conducted using WAIC, LOO, and Bayes Factor (Table 7). 
+
+WAIC and LOO scores were similar between Logistic and Gompertz models, indicating comparable predictive capabilities. However, the Bayes Factor (BF = 157.42) suggests that the Gompertz model is strongly favored over the Logistic model under a Bayesian framework.
+
+Posterior parameter distributions for the Gompertz and Logistic models are summarized in \textbf{Tables 8 and 9}. The posterior medians and 95\% credible intervals provide insights into model uncertainty. Notably:
+\begin{itemize}
+    \item The growth rate parameter $r_{\max}$ for Gompertz has a wider credible interval (0.4237, 1.2149) compared to Logistic (0.1059, 0.3346), indicating higher uncertainty in Gompertz's growth rate estimation.
+    \item The carrying capacity $K$ shows a similar range in both models, though slightly higher median values are observed for Gompertz.
+    \item The lag phase parameter $t_{lag}$ in Gompertz exhibits significant variation, reflecting the challenge in estimating initial adaptation periods.
+\end{itemize}
+These findings suggest that while the Gompertz model is statistically preferred, parameter uncertainty must be carefully considered in model selection. The wider range of $r_{\max}$ in Gompertz may be attributed to the additional flexibility of the model in capturing growth dynamics.
+
+\subsection{Mathematical Proof: Convergence to Exponential Growth in the Limit of Infinite Segmentation}
+When the number of temporal segments approaches infinity, all growth models eventually converge to exponential growth. This can be demonstrated as follows:
+
+Consider a general nonlinear growth function:
+\begin{equation}
+    \frac{dN}{dt} = f(N, t, \theta)
+\end{equation}
+where $\theta$ represents the model parameters. In a segmented framework, time is divided into $n$ intervals such that $t_i = i \Delta t$, where $\Delta t \to 0$ as $n \to \infty$. In each small interval, the growth equation can be approximated by its first-order Taylor expansion:
+\begin{equation}
+    \frac{dN}{dt} \approx r N
+\end{equation}
+which is the definition of exponential growth. This shows that as segmentation increases indefinitely, all structured growth models reduce to simple exponential dynamics. 
+
+However, exponential growth fails to capture biological constraints, such as carrying capacity, leading to deviations in long-term predictions. This limitation explains why segmented models may still require non-exponential structures for meaningful long-term predictions.
+
+\subsection{Effect of Initial Value Selection on Model Fitting}
+Improper initial value selection can significantly affect model convergence and parameter estimation. As discussed in Section 2.1, extreme values, unstable lag phase estimation, and sensitivity to slope calculations can lead to inaccurate initial conditions.
+
+To improve robustness, adjustments were introduced:
+\begin{itemize}
+    \item \textbf{Adjusted $N_0$ and $K$:} Defined as $N_0 = 0.9 \times \min(PopBio)$ and $K = 1.1 \times \max(PopBio)$ to avoid extreme values.
+    \item \textbf{Stable $t_{lag}$ Estimation:} Using the median of time points instead of relying on second derivative peaks.
+    \item \textbf{Sliding Window $r_{\max}$ Calculation:} Identifying maximum slope over a moving window to reduce noise sensitivity.
+\end{itemize}
+
+These modifications resulted in improved model stability and accuracy, ensuring better parameter estimation and reducing convergence issues. By refining initial values, model selection outcomes became more reliable, minimizing issues related to parameter sensitivity and overfitting.
+\section{Future Directions}
+Further discussions on model extensions and potential research directions, including dynamic prior selection in Bayesian inference and stochastic model formulations, are provided in the Supplementary Information.
+
+% 在最后插入 SI
+\input{supplementary}  
+\nocite{*}
+\bibliographystyle{apalike} % 选择APA格式
+\bibliography{references} % 对应上面的 .bib 文件
+
+
+\end{document}
+
+
+
+
+
+
+
