@@ -1,0 +1,83 @@
+HPC long practical feedback for Tianye ( Tianye Zhang ) 2025
+ 
+email : tz124@imperial.ac.uk
+username : tz124
+ 
+Your final mark is : 88.65 %
+ 
+Mark allocation break down
+1) Technically correct answers to all questions worth 60 % of final grade
+Your mark :  55.1 /60
+2) Quality of free text answers worth 8 % of final grade
+Your mark :  6 /8
+3) Quality of graphical outputs worth 8 % of final grade
+Your mark :  8.4 /10
+4) Quality of code worth 8 % of final grade
+Your mark :  7 /8
+5) Answers to challenge questions worth 16 % of final grade
+Your mark :  12 /14
+ 
+Marks for main questions
+Q 0 :    3 / 3
+Q 1 :    4 / 4
+Q 2 :    3 / 3
+Q 3 :    10 / 10
+Q 4 :    10 / 10
+Q 5 :    8 / 8
+Q 6 :    5 / 10    comments: it's very nicely put together from what I can see of the code and outputs, but unfortunately there's some mistake in the actual numbers because the larger deviation should definitely be arising in the smaller population size model. It's good that the text answer says 'A larger initial population size might reduce the impact of demographic stochasticity' because that is definitely true even though the actual results don't seem to show this.
+Q 7 :    2 / 2
+Q 8 :    1 / 1
+Q 9 :    1 / 1
+Q 10 :    2 / 2
+Q 11 :    2 / 2
+Q 12 :    2 / 2
+Q 13 :    2 / 2
+Q 14 :    3 / 3
+Q 15 :    3 / 3
+Q 16 :    1 / 1
+Q 17 :    0 / 1    comments: incorrect length length(neutral_time_series_speciation(c(1,54,23,54,52,2,3,234),0,207)) != 208, when tested the function does not converge to 1 species with speciation set to 0 - the reason is that the order of input parameters was switched from the form given in the proformer: neutral_time_series_speciation <- function(community,speciation_rate,duration) was given but somehow they got switched to function(community, duration, speciation_rate)
+Q 18 :    4 / 4
+Q 19 :    3 / 3
+Q 20 :    3 / 3
+Q 21 :    2 / 2
+Q 22 :    4 / 4
+Q 23 :    6 / 6
+Q 24 :    6 / 6
+Q 25 :    10 / 10
+Q 26 :    6.5 / 10    comments: main result was not correct I'm afraid - the speciation rate was supplied in class in the form of code the generated a different rate for each student 0.1 was not correct. Also, the graphs are not correct - initial bars are as expected (for a speciation rate of 0.1) but the later bars that are much higher are not correct, they should be close to zero.  A look at the RDA files shows that the simulations themselves were not at fault for this error so it was a mistake in the data combination / graphing code of this question. Note: I came back and increased the mark for this after seeing challenge E answer which shows correct bar charts for this question so I'm giving benefit of doubt as though challenge E results were handed in as answer to Q26 as well.
+          ---------
+Total     106.5 / 116
+          ---------
+ 
+Marks for text quality :  6 /8
+Comments...
+In question 1 excellent, clear and shows strong understanding.
+In question 2 excellent
+In question 5 very good, but a little long-winded and off point - missed the point that spead populations are more susceptible than adults because juveniles have a chance of death before they mature and can reproduce so they are of less. value to the population.
+In question 6 it's well written, unfortunately the text is held back by trying to explain an (incorrect) graphic result.
+In question 14 excellent, if I'm being picky I'd say the fitness is an individual property rather than the property of a species in this context.
+In question 18 excellent - would have been nice to mention 'dynamic equilibrium' concept from lectures.
+In question 22 very good but a bit long-winded, could have covered them main points in fewer words.
+ 
+Marks for graphics quality :  8.4 /10
+Comments...
+In question 1 excellent though it's a shame the legend overlaps the data - better would be to reposition the legend to avoid this.
+In question 2 excellent, I particularly like the initiative of including the stochastic and deterministic results on the same axes. Again, please make sure the legend doesn't obscure data.
+In question 5 very good, ideally would have axes (not a grid) and the bar labels would be fully spelled out e.g. without a _ in between words
+In question 6 excellent, I would prefer axes to a grid and no _ in legend but these are minor and picky points.
+In question 14 excellent
+In question 18 excellent though ideally would not have a box around the legend in my opinion
+In question 22 very good, but would have been nice to see full octave labels (1,2-3,4-7 and so on)
+In question 26 very good but i'd ideally like bigger text and proper octave labels
+ 
+Marks for code quality :  7 /8
+Comments...
+very good, well commented but some room for improvement in parts
+ 
+Marks for challenge questions :  12 /14
+Comments...
+challenge question A, excellent - only minor points might be graph output resolution (too low) and choice of grid instead of axes
+challenge question B, excellent, would have been nice to focus x axis on more interesting part of parameter space
+challenge question C, excellent, a small point but I'd suggest focus on a smaller part of the x axis where the interesting approach to equilibrium happens, and include more initial conditions'
+challenge question D, If I'm being really picky I'd say larger text size is needed on the graph.
+challenge question E, very good but comparison isn't quite like for like because we have multiple time series from the forwards simulations and the coalescence time is based on a single repeat
